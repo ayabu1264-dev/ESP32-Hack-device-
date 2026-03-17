@@ -12,33 +12,35 @@ jobs:
       - name: Setup Arduino CLI
         uses: arduino/setup-arduino-cli@v1
 
-      - name: Install Spacehuhn Deauther SDK
+      - name: Install ESP32 Core
+        # Karena di gambar lu pake ESP32, kita install core ESP32 resmi
         run: |
-          arduino-cli core update-index --additional-urls https://raw.githubusercontent.com/SpacehuhnTech/arduino/main/package_spacehuhn_index.json
-          arduino-cli core install deauther:esp8266 --additional-urls https://raw.githubusercontent.com/SpacehuhnTech/arduino/main/package_spacehuhn_index.json
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32
 
-      - name: Install SimpleCLI
-        run: arduino-cli lib install "SimpleCLI"
+      - name: Install Libraries
+        run: |
+          arduino-cli lib install "ESPAsyncWebServer"
+          arduino-cli lib install "AsyncTCP"
+          arduino-cli lib install "ArduinoJson"
 
       - name: Fix Structure and Compile
         run: |
-          # 1. Buat folder kerja sesuai nama file .ino
-          mkdir -p WifiXv1.5
-          cp -rp ./* WifiXv1.5/ 2>/dev/null || true
+          # 1. Samakan nama folder dengan nama file .ino di gambar
+          # Nama file di gambar: ESP32_Interactive_Hacking_Toolkit.ino
+          mkdir -p ESP32_Interactive_Hacking_Toolkit
           
-          # 2. FIX PATH LIBRARY (Ini kuncinya!)
-          # Kita buat folder 'src' di dalem folder kerja, terus copy isinya
-          # Biar kodingan lu nemu "src/ArduinoJson-v5.13.5/ArduinoJson.h"
-          mkdir -p WifiXv1.5/src
-          cp -rp src/* WifiXv1.5/src/ 2>/dev/null || true
+          # 2. Copy semua file ke folder tersebut
+          cp -r ./* ESP32_Interactive_Hacking_Toolkit/ 2>/dev/null || true
           
-          # 3. Compile pake Board NodeMCU (biar kenal pin D5) di SDK Spacehuhn
-          # Pake eesz=4M2M sesuai request lu
-          arduino-cli compile --fqbn deauther:esp8266:nodemcuv2:eesz=4M2M \
-            --output-dir ./build ./WifiXv1.5/WifiXv1.5.ino
+          # 3. Jalankan Compile
+          # Menggunakan FQBN standar ESP32 Dev Module
+          arduino-cli compile --fqbn esp32:esp32:esp32 \
+            --output-dir ./build \
+            ./ESP32_Interactive_Hacking_Toolkit/ESP32_Interactive_Hacking_Toolkit.ino
 
       - name: Upload Binary
         uses: actions/upload-artifact@v4
         with:
-          name: WifiX-V1.5-Final-Binary
+          name: WifiX-ESP32-Binary
           path: ./build/*.bin
