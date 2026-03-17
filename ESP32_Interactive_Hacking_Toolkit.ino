@@ -31,8 +31,8 @@
 
 // --- 2. GLOBAL DEFINITIONS & VARIABLES ---
 // Wi-Fi Credentials (for AP Mode)
-const char* ap_ssid = "ESP32_Hacking_Tool";
-const char* ap_password = "password123"; // Use a more secure password
+const char* ap_ssid = "Vivo1904";
+const char* ap_password = "Sangkur87"; // Use a more secure password
 
 // Web Server Object
 AsyncWebServer server(80);
